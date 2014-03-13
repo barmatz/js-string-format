@@ -1,9 +1,20 @@
 /*jshint node:true */
 module.exports = function (grunt) {
     'use strict';
-    
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        clean: {
+            dist: 'dist'
+        },
+        copy: {
+            src: {
+                expand: true,
+                cwd: 'src/',
+                src: '**',
+                dest: 'dist/'
+            }
+        },
         jasmine: {
             options: {
                 specs: 'test/**/{spec,*Spec}.js'
@@ -12,7 +23,7 @@ module.exports = function (grunt) {
                 src: 'src/**/*.js'
             },
             dist: {
-                src: 'dist/**/*.js'
+                src: 'dist/**/*.min.js'
             }
         },
         jshint: {
@@ -26,7 +37,7 @@ module.exports = function (grunt) {
                 options: {
                     devel: false
                 },
-                src: 'dist/**/*.js'
+                src: ['dist/**/*.js', '!dist/**/*.min.js']
             }
         },
         uglify: {
@@ -37,7 +48,7 @@ module.exports = function (grunt) {
             },
             src: {
                 files: {
-                    'dist/string.format.min.js': 'dist/string.format.js'
+                    'dist/format.min.js': 'src/format.js'
                 }
             }
         },
@@ -56,10 +67,12 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
 
-    grunt.registerTask('default', ['jshint:grunt', 'jshint:src', 'jasmine:src', 'jshint:dist', 'jasmine:dist', 'uglify', 'jasmine:dist']);
+    grunt.registerTask('default', ['jshint:grunt', 'jshint:src', 'jasmine:src', 'clean', 'copy', 'uglify', 'jshint:dist', 'jasmine:dist']);
 };
